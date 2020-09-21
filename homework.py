@@ -63,14 +63,14 @@ def get_homework_statuses(current_timestamp):
 
 def send_message(message):
     try:
-        bot.send_message(chat_id=CHAT_ID, text=message)
+        msg = bot.send_message(chat_id=CHAT_ID, text=message)
     except NetworkError as e:
         logging.error(f'Ошибка подключения к Telegram API: {e}')
         return e
     except TelegramError as e:
         logging.error(f'Ошибка Telegram API: {e}')
         return e
-    return 0
+    return msg
 
 
 def main():
