@@ -7,6 +7,8 @@ venv/
 __pycache__/
 *.py[cod]
 *.log
+.flake8
+requirements.txt
 
 .idea
 *.env
@@ -22,3 +24,4 @@ posts/static/
 media/
 
 db.sqlite3
+/.flake8

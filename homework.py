@@ -4,20 +4,22 @@ import time
 
 import requests
 import telegram
+
 from dotenv import load_dotenv
+from telegram.error import NetworkError, TelegramError
 
 # Включаем поддержку записи UTF-8 в журналах
 logging.basicConfig(
-    handlers=[logging.FileHandler('hw_sp_bot.log', 'w', 'utf-8')],
-    format="%(filename)s[LINE:%(lineno)d]# "
-           "%(levelname)-8s [%(asctime)s]  %(message)s",
+    handlers=[logging.FileHandler('hw_sp_bot.log', 'a', 'utf-8')],
+    format='%(filename)s[LINE:%(lineno)d]# '
+           '%(levelname)-8s [%(asctime)s]  %(message)s',
     level=logging.INFO
 )
 
 
 load_dotenv()
 
-PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
+PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 PRAKTIKUM_URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
@@ -53,11 +55,22 @@ def get_homework_statuses(current_timestamp):
     except requests.RequestException as e:
         logging.error(f'Не удалось подключиться к серверу: {e}')
         return {}
+    except Exception as e:
+        logging.error(f'Ошибка запроса к API Яндекс: {e}')
+        return {}
     return homework_statuses.json()
 
 
 def send_message(message):
-    return bot.send_message(chat_id=CHAT_ID, text=message)
+    try:
+        bot.send_message(chat_id=CHAT_ID, text=message)
+    except NetworkError as e:
+        logging.error(f'Ошибка подключения к Telegram API: {e}')
+        return e
+    except TelegramError as e:
+        logging.error(f'Ошибка Telegram API: {e}')
+        return e
+    return 0
 
 
 def main():
@@ -71,7 +84,7 @@ def main():
                     new_homework.get('homeworks')[0])
                 )
                 current_timestamp = new_homework.get('current_date')
-            time.sleep(300)
+            time.sleep(3)
 
         except Exception as e:
             logging.error(f'Бот упал с ошибкой: {e}')
