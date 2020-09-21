@@ -11,6 +11,7 @@ logging.basicConfig(
     handlers=[logging.FileHandler('hw_sp_bot.log', 'w', 'utf-8')],
     format="%(filename)s[LINE:%(lineno)d]# "
            "%(levelname)-8s [%(asctime)s]  %(message)s",
+    level=logging.INFO
 )
 
 
@@ -61,6 +62,7 @@ def send_message(message):
 
 def main():
     current_timestamp = int(time.time())
+    logging.info('Main worker has started')
     while True:
         try:
             new_homework = get_homework_statuses(current_timestamp)
