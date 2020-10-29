@@ -52,14 +52,11 @@ def parse_homework_status(homework):
 
 
 def get_homework_statuses(current_timestamp):
-    # Добавил проверку не только типа, но и диапазона возможных значений -
-    # надеюсь, что до 2050 года хватит ;)
     if (type(current_timestamp) == int and
             0 <= current_timestamp <= 2524608000):
         params = {'from_date': current_timestamp}
     else:
         logging.error(f'Получено неверное значение даты: {current_timestamp}')
-        # Попытаемся исправить ситуацию
         params = {'from_date': int(time.time())}
     headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
     try:
@@ -98,7 +95,7 @@ def send_message(message):
 
 
 def main():
-    current_timestamp = int(time.time())
+    current_timestamp = int(1)
     logging.info('Main worker has started')
     while True:
         try:
@@ -108,7 +105,7 @@ def main():
                     new_homework.get('homeworks')[0])
                 )
                 current_timestamp = new_homework.get('current_date')
-            time.sleep(60*5)  # Так всяко наглядней
+            time.sleep(60*5)
 
         except Exception as e:
             logging.error(f'Бот упал с ошибкой: {e}')
